@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <head>
   <title>辰记</title>
+  <link rel="stylesheet" href="static/index.css" />
 </head>
-<body>
-  <h1>Hello CHENJI</h1>
-  <script src="static/mustache.js"></script>
-  <script>
-    console.log(Mustache);
+<body onload="renderHello()">
+  <div id="target">Loading...</div>
+  <script id="template" type="x-tmpl-mustache">
+    <h1>Hello {{ name }}!</h1>
   </script>
+  <script src="static/mustache.js"></script>
+  <script src="static/render.js"></script>
 </body>
 </html>
