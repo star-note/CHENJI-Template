@@ -137,7 +137,7 @@ function loadData() {
         };
       } else {
         // 页面刷新
-        window.render(processHash());
+        return processHash();
       }
     });
   });
