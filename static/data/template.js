@@ -1,0 +1,1 @@
+var TEMPTYPE = 'default'; // 使用的模板，即 templates下面的文件夹名字
