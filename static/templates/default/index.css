@@ -50,6 +50,11 @@ h2 {
   background-color: #131313;
   color: #fff;
 }
+a {
+  display: inline-block;
+  text-decoration: none;
+  color: #727272;
+}
 
 .layout {
   max-width: 1175px;
@@ -77,8 +82,6 @@ header {
 .right svg {
   width: 24px;
   cursor: pointer;
-}
-.menu {
 }
 
 .menu section {
@@ -173,6 +176,7 @@ header {
   max-width: 100%;
   color: #fff;
   width: 100%;
+  cursor: pointer;
 }
 .blog-card-bg-container {
   /* position: absolute; */
@@ -212,6 +216,7 @@ header {
   border-bottom: 1px solid #d5d5d5;
   width: 100%;
   min-width: 350px;
+  cursor: pointer;
 }
 .article-item:last-child {
   border-bottom: 0;
@@ -248,6 +253,7 @@ header {
 .blog-item {
   max-width: 100%;
   margin-bottom: 48px;
+  cursor: pointer;
 }
 .blog-item-image {
   width: 264px;
@@ -279,6 +285,9 @@ header {
   justify-content: space-between;
 }
 
+.article-header {
+  margin-top: 24px;
+}
 .article-title {
   color:#131313;
 }
