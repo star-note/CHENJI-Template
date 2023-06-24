@@ -120,6 +120,14 @@ function loadData() {
       categoryItem.sub = category;
       categoryItem.hasSub = true;
 
+      window.addEventListener(
+        'hashchange',
+        function (e) {
+          window.render(processHash());
+        },
+        false,
+      );
+
       if (!window.location.hash) {
         const home = processHome();
         console.log(category, home, layout);
@@ -127,8 +135,10 @@ function loadData() {
           layout: window.layout,
           home: home,
         };
+      } else {
+        // 页面刷新
+        window.render(processHash());
       }
-      hashChange();
     });
   });
 }
@@ -147,12 +157,12 @@ function processHome() {
     allNotes = allNotes.concat(window.dataSource[category[j]]);
   }
   show = sort(show);
-  const first = show.shift()
+  const first = show.shift();
 
   return {
     first: first,
     right: show,
-    allNotes: sort(allNotes).filter(function(note) {
+    allNotes: sort(allNotes).filter(function (note) {
       return (
         note.noteId !== first.noteId &&
         show
@@ -160,7 +170,7 @@ function processHome() {
             return note.noteId;
           })
           .indexOf(note.noteId) === -1
-      ); 
+      );
     }),
   };
 }
@@ -170,8 +180,8 @@ function processCategory(category) {
   return {
     first: allNotes[0],
     right: allNotes.slice(1, 4),
-    allNotes: allNotes.splice(4)
-  }
+    allNotes: allNotes.splice(4),
+  };
 }
 
 function sort(arr) {
@@ -184,55 +194,45 @@ function sort(arr) {
 }
 
 // 路由控制基础函数
-function hashChange() {
-  const processHash = function() {
-    const hash = window.location.hash;
-    let result;
-    if (hash === '#/') {
-      result = {
-        home: processHome(),
-        layout: window.layout
-      };
-    } else if (hash === '#/about') {
-      result = {
-        layout: window.layout,
-      }; // TODO
-    } else if (hash === '#/concat') {
-      result = {
-        layout: window.layout,
-      }; // TODO
-    } else if (hash.indexOf('#/category') === 0) {
-      const category = window.decodeURI(hash.match(/#\/category\/(.+)/)[1]);
-      result = {
-        layout: window.layout,
-        category: processCategory(category),
-      };
-    } else if (hash.indexOf('#/blog') === 0) {
-      const noteId = window.decodeURI(hash.match(/#\/blog\/(.+)/)[1]);
-      const category = Object.keys(window.dataSource);
-      let allNotes = [];
-      for (let j = 0; j < category.length; j++) {
-        allNotes = allNotes.concat(window.dataSource[category[j]]);
-      }
-
-      result = {
-        layout: window.layout,
-        article: allNotes.filter(function (note) {
-          return note.noteId === noteId;
-        })[0],
-      };
+function processHash() {
+  const hash = window.location.hash;
+  let result;
+  if (hash === '#/') {
+    result = {
+      home: processHome(),
+      layout: window.layout,
+    };
+  } else if (hash === '#/about') {
+    result = {
+      layout: window.layout,
+    }; // TODO
+  } else if (hash === '#/concat') {
+    result = {
+      layout: window.layout,
+    }; // TODO
+  } else if (hash.indexOf('#/category') === 0) {
+    const category = window.decodeURI(hash.match(/#\/category\/(.+)/)[1]);
+    result = {
+      layout: window.layout,
+      category: processCategory(category),
+    };
+  } else if (hash.indexOf('#/blog') === 0) {
+    const noteId = window.decodeURI(hash.match(/#\/blog\/(.+)/)[1]);
+    const category = Object.keys(window.dataSource);
+    let allNotes = [];
+    for (let j = 0; j < category.length; j++) {
+      allNotes = allNotes.concat(window.dataSource[category[j]]);
     }
 
-    return result;
+    result = {
+      layout: window.layout,
+      article: allNotes.filter(function (note) {
+        return note.noteId === noteId;
+      })[0],
+    };
   }
-  window.addEventListener('hashchange',function(e) {
-    window.render(processHash());
-  },false);
 
-  // 页面刷新
-  if (window.location.hash) {
-    window.render(processHash());
-  }
+  return result;
 }
 
 function onClick(hash) {
