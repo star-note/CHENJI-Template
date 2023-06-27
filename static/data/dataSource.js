@@ -1,5 +1,5 @@
 var dataSource = {
-  辰记发布: [
+  'CHENJI-Temple': [
     {
       title: '辰记发布数据',
       content:
@@ -9,7 +9,7 @@ var dataSource = {
       noteId: '1',
     },
   ],
-  辰记发布2: [
+  'CHENJI-Temple2': [
     {
       title: '辰记发布2数据',
       content:
