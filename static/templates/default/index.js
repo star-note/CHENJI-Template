@@ -5,7 +5,7 @@ var articleItemTpl = `
   </div>
   <div class="blog-right hover-margin">
     <h3 class="blog-item-title">{{title}}</h3>
-    <p lass="blog-item-desc">{{content}}</p>
+    <p lass="blog-item-desc ellipsis">{{desc}}</p>
     <div class="blog-item-bottom flex">
       <div class="blog-item-category badge-primary" onclick="onClick('#/category/{{category}}')">{{category}}</div>
       <div class="blog-item-time">{{publishTime}}</div>
@@ -171,6 +171,11 @@ function processHome() {
           })
           .indexOf(note.noteId) === -1
       );
+    }).map(function(note) {
+      return {
+        ...note,
+        desc: filterHtml(note.content)
+      };
     }),
   };
 }
@@ -180,7 +185,12 @@ function processCategory(category) {
   return {
     first: allNotes[0],
     right: allNotes.slice(1, 4),
-    allNotes: allNotes.splice(4),
+    allNotes: allNotes.splice(4) ? allNotes.splice(4).map(function(note) {
+      return {
+        ...note,
+        desc: filterHtml(note.content)
+      };
+    }) : null,
   };
 }
 

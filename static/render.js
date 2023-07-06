@@ -32,3 +32,8 @@ function onLoad() {
     }); // 加载所有数据后渲染
   }); // 加载模板
 }
+
+// 过滤所有 HTML 标签，主要用于生成纯文本的文章简介
+function filterHtml(html) {
+  return html.replace(/<[^<>]+>/g, '');
+}
