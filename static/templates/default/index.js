@@ -160,37 +160,28 @@ function processHome() {
   const first = show.shift();
 
   return {
-    first: first,
-    right: show,
-    allNotes: sort(allNotes).filter(function (note) {
-      return (
-        note.noteId !== first.noteId &&
-        show
-          .map(function (note) {
-            return note.noteId;
-          })
-          .indexOf(note.noteId) === -1
-      );
-    }).map(function(note) {
-      return {
-        ...note,
-        desc: filterHtml(note.content)
-      };
-    }),
+    first: addNoteListProps(first),
+    right: addNoteListProps(show),
+    allNotes: addNoteListProps(sort(allNotes)
+      .filter(function (note) {
+        return (
+          note.noteId !== first.noteId &&
+          show
+            .map(function (note) {
+              return note.noteId;
+            })
+            .indexOf(note.noteId) === -1
+        );
+      }))
   };
 }
 
 function processCategory(category) {
   const allNotes = sort(window.dataSource[category]);
   return {
-    first: allNotes[0],
-    right: allNotes.slice(1, 4),
-    allNotes: allNotes.splice(4) ? allNotes.splice(4).map(function(note) {
-      return {
-        ...note,
-        desc: filterHtml(note.content)
-      };
-    }) : null,
+    first: addNoteListProps(allNotes[0]),
+    right: addNoteListProps(allNotes.slice(1, 4)),
+    allNotes: addNoteListProps(allNotes.splice(4))
   };
 }
 
@@ -250,5 +241,23 @@ function onClick(hash) {
   if (hash) {
     window.location.hash = hash;
     window.event.stopPropagation();
+  }
+}
+
+function addNoteListProps(noteList) {
+  if (noteList instanceof Array) {
+    noteList.map(function(note) {
+      return {
+        ...note,
+        desc: filterHtml(note.content),
+        allImgs: getImgSrc(note.content)
+      }
+    })
+  } else if (noteList) {
+    return {
+      ...noteList,
+      desc: filterHtml(note.content),
+      allImgs: getImgSrc(noteList.content)
+    };
   }
 }
