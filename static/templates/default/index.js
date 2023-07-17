@@ -113,7 +113,9 @@ function loadData() {
   return loadScript('static/data/layout.js').then(function () {
     return loadScript('static/data/dataSource.js').then(function () {
       // 处理 layout 的数据使能有 category 的下拉列表
-      const category = Object.keys(window.dataSource);
+      const category = Object.keys(window.dataSource).filter(function(key) {
+        return window.dataSource[key] && window.dataSource[key].length > 0;
+      });
       const categoryItem = window.layout.menu.filter(function (item) {
         return item.title === '文章分类';
       })[0];
@@ -241,7 +243,7 @@ function processHash() {
     result = {
       layout: window.layout,
       article: allNotes.filter(function (note) {
-        return note.noteId === noteId;
+        return note && note.noteId === noteId;
       })[0],
     };
   }
