@@ -257,6 +257,7 @@ function onClick(hash) {
   }
 }
 
+// 给笔记或笔记数组添加 desc/html 字段
 function addNoteListProps(noteList) {
   if (noteList instanceof Array) {
     noteList.map(function(note) {
@@ -269,8 +270,8 @@ function addNoteListProps(noteList) {
   } else if (noteList) {
     return {
       ...noteList,
-      desc: filterHtml(note.content),
-      allImgs: getImgSrc(noteList.content)
+      desc: filterHtml(noteList.content),
+      allImgs: getImgSrc(noteList.content),
     };
   }
 }
