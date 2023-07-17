@@ -153,8 +153,10 @@ function processHome() {
   let allNotes = [];
 
   for (let j = 0; j < category.length; j++) {
-    show.push(window.dataSource[category[j]][0]);
-    allNotes = allNotes.concat(window.dataSource[category[j]]);
+    if (window.dataSource[category[j]) {
+      show.push(window.dataSource[category[j]][0]);
+      allNotes = allNotes.concat(window.dataSource[category[j]]);
+    }
   }
   show = sort(show);
   const first = show.shift();
@@ -178,11 +180,20 @@ function processHome() {
 
 function processCategory(category) {
   const allNotes = sort(window.dataSource[category]);
-  return {
-    first: addNoteListProps(allNotes[0]),
-    right: addNoteListProps(allNotes.slice(1, 4)),
-    allNotes: addNoteListProps(allNotes.splice(4))
-  };
+  if (allNotes && allNotes.length > 0) {
+    return {
+      first: addNoteListProps(allNotes[0]),
+      right: addNoteListProps(allNotes.slice(1, 4)),
+      allNotes: addNoteListProps(allNotes.splice(4))
+    };
+  } else {
+    return {
+      first: undefined,
+      right: undefined,
+      allNotes: undefined,
+    }
+  }
+  
 }
 
 function sort(arr) {
