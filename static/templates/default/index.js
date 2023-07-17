@@ -153,7 +153,7 @@ function processHome() {
   let allNotes = [];
 
   for (let j = 0; j < category.length; j++) {
-    if (window.dataSource[category[j]) {
+    if (window.dataSource[category[j]]) {
       show.push(window.dataSource[category[j]][0]);
       allNotes = allNotes.concat(window.dataSource[category[j]]);
     }
