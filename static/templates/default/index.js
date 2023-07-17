@@ -186,11 +186,13 @@ function processCategory(category) {
 }
 
 function sort(arr) {
-  arr.sort(function (a, b) {
-    if (a.publishTime < b.publishTime) return 1;
-    if (a.publishTime > b.publishTime) return -1;
-    return 0;
-  });
+  if (arr && arr.length > 0) {
+    arr.sort(function (a, b) {
+      if (a.publishTime < b.publishTime) return 1;
+      if (a.publishTime > b.publishTime) return -1;
+      return 0;
+    });
+  }
   return arr;
 }
 
