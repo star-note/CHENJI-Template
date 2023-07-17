@@ -92,7 +92,7 @@ var articleTpl = `
     <p>{{publishTime}}</p>
   </div>
   <div class="article-content">
-    {{content}}
+    {{html}}
   </div>
 {{/article}}`;
 var template = `
