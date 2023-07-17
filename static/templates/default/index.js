@@ -73,7 +73,7 @@ var homeTpl = `
             <img src="https://assets.website-files.com/62abc23e594f83d9d66b136f/62abe96825e3ea16e4fbacb5_productivity-apps-thumbnail-blog-writelogy-x-webflow-template.jpeg" />
           </div>
         </div>
-        {{/right}}
+      {{/right}}
       </div>
     </div>
     <div class="lastest-blogs">
@@ -92,7 +92,7 @@ var articleTpl = `
     <p>{{publishTime}}</p>
   </div>
   <div class="article-content">
-    {{html}}
+    {{{content}}}
   </div>
 {{/article}}`;
 var template = `
