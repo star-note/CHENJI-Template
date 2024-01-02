@@ -262,7 +262,7 @@ function onClick(hash) {
 // 给笔记或笔记数组添加 desc/html 字段
 function addNoteListProps(noteList) {
   if (noteList instanceof Array) {
-    noteList.map(function(note) {
+    return noteList.map(function(note) {
       return {
         ...note,
         desc: filterHtml(note.content),
