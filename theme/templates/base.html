@@ -1,0 +1,261 @@
+{#- 移植自 starnote-api app/web/templates/base.html（SPEC-r8）。差异：无登录/搜全平台；header 多「辰记博客」与语言切换；
+    搜索走 Google site: 搜索；Cookie 条只在开启 AdSense 时输出；hreflang 指向真实的多语言页面（/ 与 /en/）。 -#}
+<!doctype html>
+<html lang="{{ site.htmlLang }}" class="no-js" data-theme-default="{{ site.theme }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{{ meta.title }}</title>
+<script>(function(){var d=document.documentElement;d.classList.remove('no-js');d.classList.add('js');var t=null;try{t=localStorage.getItem('sn-theme');var c=localStorage.getItem('sn.cookie-consent');if(c){d.setAttribute('data-consent',c.replace(/"/g,''));}}catch(e){}if(t!=='light'&&t!=='dark'){t=d.getAttribute('data-theme-default');}if(t==='light'||t==='dark'){d.setAttribute('data-theme',t);}var dark=t==='dark'||(t!=='light'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);d.classList.toggle('is-dark',dark);})();</script>
+<meta name="description" content="{{ meta.description }}">
+{% if meta.noindex %}
+<meta name="robots" content="noindex, follow">
+{% else %}
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+{% endif %}
+<link rel="canonical" href="{{ meta.canonical }}">
+{% for alt in hreflang %}
+<link rel="alternate" hreflang="{{ alt.lang }}" href="{{ alt.href }}">
+{% endfor %}
+<link rel="alternate" type="application/rss+xml" title="{{ shell.title }}" href="{{ site.absolute(site.url_feed()) }}">
+<link rel="alternate" type="application/atom+xml" title="{{ shell.title }}" href="{{ site.absolute(site.url_atom()) }}">
+{% if meta.markdown %}
+<link rel="alternate" type="text/markdown" title="Markdown" href="{{ site.absolute(meta.markdown) }}">
+{% endif %}
+{% for origin in preconnect %}
+<link rel="preconnect" href="{{ origin }}">
+{% endfor %}
+<link rel="icon" href="{{ site.url_static('favicon.ico') }}" sizes="32x32">
+<link rel="icon" href="{{ site.url_static('favicon.svg') }}" type="image/svg+xml">
+<meta name="generator" content="StarNote GitHub Pages template">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141317" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="{{ meta.type }}">
+<meta property="og:title" content="{{ meta.title }}">
+<meta property="og:description" content="{{ meta.description }}">
+<meta property="og:url" content="{{ meta.canonical }}">
+<meta property="og:site_name" content="{{ shell.title }}">
+<meta property="og:locale" content="{{ site.ogLocale }}">
+{% for loc in og_alternates %}
+<meta property="og:locale:alternate" content="{{ loc }}">
+{% endfor %}
+{% if meta.type == 'article' %}
+<meta name="author" content="{{ meta.author_name or owner.name }}">
+{% endif %}
+{% if meta.image %}
+<meta property="og:image" content="{{ meta.image }}">
+{% if meta.image_width and meta.image_height %}
+<meta property="og:image:width" content="{{ meta.image_width }}">
+<meta property="og:image:height" content="{{ meta.image_height }}">
+{% endif %}
+{% if meta.image_alt %}
+<meta property="og:image:alt" content="{{ meta.image_alt }}">
+{% endif %}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{{ meta.image }}">
+{% if meta.image_alt %}
+<meta name="twitter:image:alt" content="{{ meta.image_alt }}">
+{% endif %}
+{% else %}
+<meta name="twitter:card" content="summary">
+{% endif %}
+<meta name="twitter:title" content="{{ meta.title }}">
+<meta name="twitter:description" content="{{ meta.description }}">
+{% if twitter_site %}
+<meta name="twitter:site" content="{{ twitter_site }}">
+{% endif %}
+{% if meta.type == 'article' %}
+<meta property="article:published_time" content="{{ meta.published }}">
+<meta property="article:modified_time" content="{{ meta.modified }}">
+<meta property="article:author" content="{{ meta.author_url or owner.name }}">
+{% if meta.section %}
+<meta property="article:section" content="{{ meta.section }}">
+{% endif %}
+{% for tag in meta.tags %}
+<meta property="article:tag" content="{{ tag }}">
+{% endfor %}
+{% endif %}
+<link rel="stylesheet" href="{{ site.url_static('blog.css') }}">
+{% if has_custom_css %}
+<link rel="stylesheet" href="{{ site.url_static('custom.css') }}">
+{% endif %}
+{% if ads %}
+<meta name="google-adsense-account" content="{{ ads.client }}">
+{% if ads.consent == 'cmp' %}
+<script async src="{{ ads.script }}" crossorigin="anonymous"></script>
+{% endif %}
+{% endif %}
+{% for item in meta.jsonld %}
+<script type="application/ld+json">{{ item|jsonld }}</script>
+{% endfor %}
+{% block head %}{% endblock %}
+</head>
+{% import "_macros.html" as m with context %}
+<body class="blog blog-{{ kind }}"
+      data-handle="{{ site.handle }}"
+      data-api="{{ api_url }}"
+      data-app="{{ site.app_url }}"
+      data-lang="{{ site.ssrLang }}"
+      data-privacy="{{ site.url_privacy() }}"
+      data-comments-policy="{{ comments_policy }}"
+      {% if ads %}data-ads="{{ ads.script }}" data-ads-consent="{{ ads.consent }}"{% endif %}
+      {% block body_attrs %}{% endblock %}>
+<a class="skip-link" href="#main">{{ t('skip_to_content') }}</a>
+{% set menu_pinned = kind in ['home', 'category'] %}
+<div class="blog-top">
+  <nav class="blog-nav" aria-label="{{ shell.title }}">
+    <div class="blog-nav-brand">
+      {# the same animated 辰记 mark as the SSR blog, linking to the author's 辰记 blog (or the platform) #}
+      <a href="{{ site.url_starnote_blog() or site.url_platform() }}" class="blog-nav-mark sn-hbrand" aria-label="{{ t('nav_starnote_blog') if site.url_starnote_blog() else t('brand') }}">{% set uid = 'sn-navmark' %}{% include "brand/_mark.html" %}</a>
+      <a href="{{ site.url_home() }}" class="blog-nav-title">{{ shell.title }}</a>
+    </div>
+    <div class="blog-nav-links">
+      {% if not menu_pinned and categories.length %}
+      <button type="button" class="blog-nav-toggle" aria-expanded="false" aria-controls="cm-drawer" data-menu-toggle>{{ t('nav_menu') }} <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      {% endif %}
+      <a href="{{ site.url_about() }}"{% if active == 'about' %} aria-current="page"{% endif %}>{{ t('nav_about') }}</a>
+      {% if has_contact %}<a href="{{ site.url_contact() }}"{% if active == 'contact' %} aria-current="page"{% endif %}>{{ t('nav_contact') }}</a>{% endif %}
+      {% if site.url_starnote_blog() %}<a href="{{ site.url_starnote_blog() }}" class="blog-nav-starnote" title="{{ t('nav_starnote_blog_title') }}" rel="me noopener" target="_blank">{{ t('nav_starnote_blog') }}</a>{% endif %}
+    </div>
+    <span class="blog-nav-spacer"></span>
+    <form class="blog-search" action="{{ site.url_search() }}" method="get" role="search" target="_blank">
+      <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="search" name="q" placeholder="{{ t('search_site') }}" aria-label="{{ t('search_site') }}">
+      {% if site.search_scope() %}<input type="hidden" name="as_sitesearch" value="{{ site.search_scope() }}">{% endif %}
+    </form>
+    <button type="button" class="theme-toggle" data-theme-toggle aria-label="{{ t('nav_theme') }}" title="{{ t('nav_theme') }}">
+      <svg class="theme-toggle-sun" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg class="theme-toggle-moon" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+    </button>
+    {# the language switch sits where the SSR blog has 登录: only when this page exists in the other language #}
+    {% if lang_switch %}
+    <a href="{{ lang_switch.href }}" class="btn btn-sm blog-nav-login blog-nav-lang" hreflang="{{ lang_switch.hreflang }}" lang="{{ lang_switch.hreflang }}" title="{{ lang_switch.label }}">{{ lang_switch.text }}</a>
+    {% endif %}
+    {# ≤960px: the links, the search and the categories fold into this sheet (a plain <details>, no JS needed). #}
+    <details class="blog-nav-menu" data-nav-menu>
+      <summary class="blog-nav-burger" aria-label="{{ t('nav_sheet') }}" title="{{ t('nav_sheet') }}">
+        <svg class="blog-nav-burger-open" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <svg class="blog-nav-burger-close" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </summary>
+      <div class="blog-nav-sheet">
+        <form class="blog-search is-sheet" action="{{ site.url_search() }}" method="get" role="search" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <input type="search" enterkeyhint="search" name="q" placeholder="{{ t('search_site') }}" aria-label="{{ t('search_site') }}">
+          {% if site.search_scope() %}<input type="hidden" name="as_sitesearch" value="{{ site.search_scope() }}">{% endif %}
+        </form>
+        {% if categories.length %}
+        <section class="blog-nav-sheet-sec" aria-label="{{ t('nav_menu') }}">
+          <h2>{{ t('nav_menu') }}</h2>
+          <div class="blog-nav-sheet-cats">
+            <a href="{{ site.url_home() }}"{% if active == 'home' %} aria-current="page"{% endif %}>{{ t('nav_home') }}</a>
+            {% for c in categories %}<a href="{{ site.url_category(c.slug) }}"{% if active == c.slug %} aria-current="page"{% endif %}>{{ c.name }}<em>{{ c.count }}</em></a>{% endfor %}
+          </div>
+        </section>
+        {% endif %}
+        <section class="blog-nav-sheet-sec" aria-label="{{ t('foot_pages') }}">
+          <h2>{{ t('foot_pages') }}</h2>
+          <div class="blog-nav-sheet-links">
+            <a href="{{ site.url_home() }}"{% if active == 'home' %} aria-current="page"{% endif %}>{{ t('nav_home') }}</a>
+            <a href="{{ site.url_about() }}"{% if active == 'about' %} aria-current="page"{% endif %}>{{ t('nav_about') }}</a>
+            {% if has_contact %}<a href="{{ site.url_contact() }}"{% if active == 'contact' %} aria-current="page"{% endif %}>{{ t('nav_contact') }}</a>{% endif %}
+            {% if site.url_starnote_blog() %}<a href="{{ site.url_starnote_blog() }}" rel="me noopener" target="_blank">{{ t('nav_starnote_blog') }}</a>{% endif %}
+            {% if lang_switch %}<a href="{{ lang_switch.href }}" hreflang="{{ lang_switch.hreflang }}" lang="{{ lang_switch.hreflang }}">{{ lang_switch.label }}</a>{% endif %}
+          </div>
+        </section>
+      </div>
+    </details>
+  </nav>
+  {% if categories.length %}
+  <div class="blog-nav-drawer{% if menu_pinned %} is-open is-pinned{% endif %}" id="cm-drawer"{% if not menu_pinned %} aria-hidden="true"{% endif %}>
+    <div class="blog-nav-drawer-inner">
+      <nav class="cm{% if not menu_pinned %} is-embedded{% endif %}" aria-label="{{ t('menu_label') }}" data-cm data-post-url="{{ site.url_post('__KEY__') }}">
+        <div class="cm-row">
+          <span class="cm-pill" aria-hidden="true"></span>
+          <a href="{{ site.url_home() }}" data-key="home" class="cm-item is-home"{% if active == 'home' %} aria-current="page"{% endif %}><span class="cm-label">{{ t('nav_home') }}</span></a>
+          {% for c in categories %}
+          <a href="{{ site.url_category(c.slug) }}" data-key="{{ c.slug }}" data-count="{{ c.count }}" class="cm-item"{% if active == c.slug %} aria-current="page"{% endif %}><span class="cm-label">{{ c.name }}</span><sup>{{ c.count }}</sup></a>
+          {% endfor %}
+        </div>
+      </nav>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<main id="main">
+{% block content %}{% endblock %}
+</main>
+
+<footer class="blog-foot">
+  <div class="blog-foot-grid">
+    <div class="blog-foot-about">
+      <div class="blog-foot-author">
+        {{ m.owner_avatar(44) }}
+        <div>
+          <div class="blog-foot-title">{{ shell.title }}</div>
+          <div class="blog-foot-handle">{{ owner.name }}{% if site.handle %} · @{{ site.handle }}{% endif %}</div>
+        </div>
+      </div>
+      {% if blog.bio %}<p>{{ blog.bio }}</p>{% endif %}
+      {% if site.url_starnote_blog() %}<a class="btn btn-sm blog-follow" href="{{ site.url_starnote_blog() }}" target="_blank" rel="me noopener">{{ t('follow_on_starnote') }}</a>{% endif %}
+    </div>
+    {% if categories.length %}
+    <div class="blog-foot-cats">
+      <h4>{{ t('foot_cats') }}</h4>
+      <div class="foot-cats">
+        {% for c in categories %}
+        <a href="{{ site.url_category(c.slug) }}" class="foot-cat" style="--ch: {{ c.name|hue }}"><i aria-hidden="true"></i>{{ c.name }}<em>{{ c.count }}</em></a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    <div>
+      <h4>{{ t('foot_pages') }}</h4>
+      <ul>
+        <li><a href="{{ site.url_home() }}">{{ t('nav_home') }}</a></li>
+        <li><a href="{{ site.url_about() }}">{{ t('nav_about') }}</a></li>
+        {% if has_contact %}<li><a href="{{ site.url_contact() }}">{{ t('nav_contact') }}</a></li>{% endif %}
+        <li><a href="{{ site.url_feed() }}">{{ t('nav_rss') }}</a></li>
+        {% for l in blog.links %}
+        <li><a href="{{ l.url }}" target="_blank" rel="me noopener">{{ l.label }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="blog-foot-cta">
+      <h4>{{ t('foot_cta_title') }}</h4>
+      <p>{{ t('foot_cta_text') }}</p>
+      <a href="{{ site.url_register() }}" class="blog-foot-cta-btn">{{ t('foot_cta_btn') }}</a>
+    </div>
+  </div>
+  <div class="blog-foot-bar">
+    {% set powered = t('foot_powered_gh', {brand: '|||'}).split('|||') %}
+    <span>© {{ year }} {{ owner.name }} · {{ powered[0] }}<a href="{{ site.url_platform() }}">{{ t('brand') }}</a>{{ powered[1] if powered.length > 1 else '' }}</span>
+    <span class="blog-foot-legal">
+      <a href="{{ site.url_privacy() }}">{{ t('privacy') }}</a>
+      {% if ads %}<button type="button" data-cookie-settings>{{ t('cookie_settings') }}</button>{% endif %}
+    </span>
+  </div>
+</footer>
+
+{% if ads and ads.consent != 'cmp' %}
+<div class="cookie-bar" role="dialog" aria-live="polite" aria-label="{{ t('cookie_settings') }}" hidden data-cookie-bar>
+  <div class="cookie-bar-text">
+    <b>{{ t('cookie_title') }}</b>
+    <span>{{ t('cookie_text') }}<a href="{{ site.url_privacy() }}">{{ t('privacy') }}</a>{{ '。' if site.lang == 'zh' else '.' }}</span>
+  </div>
+  <div class="cookie-bar-actions">
+    <button type="button" class="btn" data-cookie-choice="necessary">{{ t('cookie_necessary') }}</button>
+    <button type="button" class="btn btn-primary" data-cookie-choice="all">{{ t('cookie_all') }}</button>
+  </div>
+</div>
+{% endif %}
+
+<script id="sn-i18n" type="application/json">{{ client_i18n|jsonld }}</script>
+<script src="{{ site.url_static('blog.js') }}" defer></script>
+{% if sn_cfg %}
+<script id="sn-cfg" type="application/json">{{ sn_cfg|jsonld }}</script>
+<script src="{{ site.url_static('sn.js') }}" defer></script>
+{% endif %}
+{% block scripts %}{% endblock %}
+</body>
+</html>

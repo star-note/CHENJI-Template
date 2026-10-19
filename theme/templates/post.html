@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{#- 移植自 starnote-api app/web/templates/post.html。差异：无阅读数；群组署名去掉；评论只在接了辰记 API 时出现；
+    多一个「其他语言」行（只有存在译文时）；canonical 可指回辰记原文。 -#}
+{% import "_macros.html" as m with context %}
+{% block body_attrs %}data-post-key="{{ post_key }}"{% endblock %}
+{% block head %}{% if post_katex %}<link rel="stylesheet" href="{{ site.url_static('katex/katex.min.css') }}">{% endif %}{% endblock %}
+{% block content %}
+<div class="post-progress" aria-hidden="true" data-progress></div>
+<div class="blog-wrap">
+  <div class="post-grid{% if not toc.length %} no-toc{% endif %}">
+    <article class="post" data-article>
+      <header class="post-head" data-post-head>
+        <nav class="post-crumbs" aria-label="{{ t('position') }}">
+          <a href="{{ site.url_home() }}">{{ t('nav_home') }}</a>
+          {% if post.category %}
+          <span aria-hidden="true">›</span>
+          <a href="{{ site.url_category(post.category.slug) }}">{{ post.category.name }}</a>
+          {% endif %}
+        </nav>
+        <h1>{{ post.title }}</h1>
+        <div class="post-byline">
+          <a href="{{ site.url_about() }}" class="post-author" rel="author">
+            {{ m.owner_avatar(28) }}
+            <span>{{ owner.name }}</span>
+          </a>
+          <span class="post-meta-line">
+            <span><time datetime="{{ post.published_at }}">{{ post.published_at|date }}</time></span>
+            {% if show_updated %}<span class="post-updated">{{ t('updated_on') }} <time datetime="{{ post.updated_at }}">{{ post.updated_at|date }}</time></span>{% endif %}
+            <span>{{ t('minutes', {n: post_minutes}) }}</span>
+            {% for tr in post.translations %}<span class="post-lang"><a href="{{ tr.href }}" hreflang="{{ tr.hreflang }}" lang="{{ tr.hreflang }}" rel="alternate">{{ tr.label }}</a></span>{% endfor %}
+          </span>
+        </div>
+      </header>
+
+      {% if show_summary %}
+      {# answer-first: the author's own summary, before everything else (GEO — engines quote the opening) #}
+      <section class="post-summary" role="doc-abstract" aria-label="{{ t('summary_label') }}">
+        <b class="post-summary-label">{{ t('summary_label') }}</b>
+        <p>{{ post.summary }}</p>
+      </section>
+      {% endif %}
+
+      {% if toc.length %}
+      <details class="post-tocbar" data-tocbar>
+        <summary><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><b>{{ t('toc') }}</b><span class="post-tocbar-cur" data-tocbar-cur></span><i class="post-tocbar-caret" aria-hidden="true"></i></summary>
+        <nav class="post-tocbar-list" aria-label="{{ t('toc') }}">
+          {% for h in toc %}<a href="#{{ h.id }}"{% if h.level >= 3 %} class="l3"{% endif %}>{{ h.text }}</a>{% endfor %}
+        </nav>
+      </details>
+      {% endif %}
+
+      {% if post.cover_url %}
+      <img class="cover post-cover" src="{{ post.cover_url }}" alt="{{ post.cover_alt or t('cover_alt', {title: post.title}) }}"{% if cover_size %} width="{{ cover_size[0] }}" height="{{ cover_size[1] }}"{% endif %} fetchpriority="high" decoding="async">
+      {% endif %}
+
+      {# the HTML the 辰记 editor rendered at publish time (front matter + HTML file in content/posts/) #}
+      {% if post_html_split %}
+      <div class="post-body">{{ post_html_split[0]|safe }}{{ m.ad_slot('article') }}{{ post_html_split[1]|safe }}</div>
+      {% else %}
+      <div class="post-body">{{ post_html|safe }}</div>
+      {% endif %}
+
+      {% if post.tags.length %}
+      <div class="post-tags">
+        {% for tg in post.tags %}<a href="{{ site.url_tag(tg.name) }}" rel="nofollow" target="_blank">#{{ tg.name }}</a>{% endfor %}
+      </div>
+      {% endif %}
+
+      {% import "_icons.html" as ic %}
+      <div class="post-share" aria-label="{{ t('pa_share') }}">
+        <span class="post-share-label">{{ t('share_label') }}</span>
+        <button type="button" class="post-share-btn" data-share-copy="{{ share.url }}" aria-label="{{ t('share_copy') }}" title="{{ t('share_copy') }}" hidden>{{ ic.icon('link', 16) }}</button>
+        <button type="button" class="post-share-btn" data-share-open aria-label="{{ t('share_wechat') }}" title="{{ t('share_wechat') }}" hidden>{{ ic.icon('wechat', 16) }}</button>
+        {% for it in share.intents %}
+        <a class="post-share-btn" href="{{ it.href }}" target="_blank" rel="noopener noreferrer nofollow" aria-label="{{ t('share_' ~ it.key) }}" title="{{ t('share_' ~ it.key) }}">{{ ic.icon(it.key, 16) }}</a>
+        {% endfor %}
+        <button type="button" class="post-share-btn" data-share-native="{{ share.native_url }}" aria-label="{{ t('share_native') }}" title="{{ t('share_native') }}" hidden>{{ ic.icon('more', 16) }}</button>
+      </div>
+
+      {% if also_on.length %}
+      <div class="post-also-on">{{ t('also_on') }}{{ '：' if site.lang == 'zh' else ': ' }}{% for a in also_on %}<a href="{{ a.url }}" target="_blank" rel="noreferrer nofollow">{{ a.platform }}</a>{% endfor %}</div>
+      {% endif %}
+
+      {{ m.tip_block(blog.tip_card, true) }}
+
+      <section class="author-card" aria-label="{{ t('about_author') }}">
+        {{ m.owner_avatar(52) }}
+        <div class="author-card-text">
+          <div class="author-card-name">
+            <a href="{{ site.url_about() }}" rel="author">{{ owner.name }}</a>
+            <span>{{ t('posts_unit', {n: stats.posts|num}) }}</span>
+          </div>
+          {% if blog.bio %}<p>{{ blog.bio }}</p>{% endif %}
+          {% if author_links.length %}
+          <div class="author-card-links">{% for l in author_links %}<a href="{{ l.url }}" target="_blank" rel="me noopener">{{ l.label }}</a>{% endfor %}</div>
+          {% endif %}
+        </div>
+        {% if site.url_starnote_blog() %}<a class="btn btn-primary blog-follow" href="{{ site.url_starnote_blog() }}" target="_blank" rel="me noopener">{{ t('follow_on_starnote') }}</a>{% endif %}
+      </section>
+
+      {{ m.follow_card(blog.follow_card) }}
+
+      {% if prev or next %}
+      <nav class="post-nav">
+        {% if prev %}<a href="{{ site.url_post(prev.slug) }}" rel="prev"><small>{{ t('prev') }}</small>{{ prev.title }}</a>{% else %}<span></span>{% endif %}
+        {% if next %}<a href="{{ site.url_post(next.slug) }}" class="next" rel="next"><small>{{ t('next') }}</small>{{ next.title }}</a>{% endif %}
+      </nav>
+      {% endif %}
+
+      {% if related.length %}
+      <section class="post-related" aria-labelledby="post-related-h">
+        <h2 id="post-related-h">{{ t('related') }}</h2>
+        <ul>
+          {% for r in related %}
+          <li>
+            <a href="{{ site.url_post(r.slug) }}" class="post-related-item hover-img">
+              <span class="hover-img-frame post-related-cover">{{ m.cover(r.cover_url, r.category.name if r.category else null, r.title) }}</span>
+              <span class="post-related-title">{{ r.title }}</span>
+              <span class="post-related-meta"><time datetime="{{ r.published_at }}">{{ r.published_at|date('short') }}</time>{% if r.category %} · {{ r.category.name }}{% endif %}</span>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+
+      {{ m.ad_slot('end') }}
+
+      {% if comments_on %}
+      {# 评论在辰记：这里只读展示原文最新 3 条（sn.js 调辰记公开 GET 接口），按钮去辰记原文参与讨论 #}
+      <section class="post-comments" id="comments" data-sn-comments>
+        <header class="post-comments-head">
+          <h2>{{ t('comments_title') }}</h2>
+          <span data-sn-comments-status></span>
+        </header>
+        <div class="post-comments-list" data-sn-comments-list></div>
+        <div class="comment-login-card">
+          <div class="comment-login-text">
+            <b>{{ t('comments_go_title') }}</b>
+            <span>{{ t('comments_go_text') }}</span>
+          </div>
+          <a class="btn" href="{{ starnote_original.url }}#comments" target="_blank" rel="noopener">{{ t('comments_go') }}</a>
+        </div>
+      </section>
+      {% elif giscus %}
+      {# giscus（GitHub Discussions）：site.json comments="giscus" 且 giscus 的 repo / repo_id / category / category_id 都填了 #}
+      <section class="post-comments" id="comments">
+        <header class="post-comments-head"><h2>{{ t('comments_title') }}</h2></header>
+        <script src="https://giscus.app/client.js" data-repo="{{ giscus.repo }}" data-repo-id="{{ giscus.repo_id }}" data-category="{{ giscus.category }}" data-category-id="{{ giscus.category_id }}" data-mapping="{{ giscus.mapping }}" data-strict="1" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="{{ 'en' if site.lang == 'en' else 'zh-CN' }}" data-loading="lazy" crossorigin="anonymous" async></script>
+      </section>
+      {% endif %}
+    </article>
+    {% if toc.length %}
+    <aside class="post-aside">
+      <nav class="post-toc" aria-label="{{ t('toc') }}" data-toc>
+        <div class="post-toc-lbl">{{ t('toc') }}</div>
+        {% for h in toc %}<a href="#{{ h.id }}"{% if h.level >= 3 %} class="l3"{% endif %}>{{ h.text }}</a>{% endfor %}
+      </nav>
+    </aside>
+    {% endif %}
+    {% include "_post_actions.html" %}
+  </div>
+</div>
+{% endblock %}

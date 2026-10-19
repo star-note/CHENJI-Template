@@ -1,0 +1,70 @@
+# 构建并部署到 GitHub Pages（Settings → Pages → Source 选「GitHub Actions」；辰记绑定时会用令牌自动设置）。
+# 只用官方 action。站点网址取自 configure-pages 的 base_url（用户站、项目站 /<repo>/、自定义域名都自动正确），
+# 其余配置全部在 content/site.json：发布文章、改配置都不需要改这个文件，辰记的令牌也不需要 workflow 权限。
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['README.md', 'LICENSE']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 连续发布时排队，不取消正在进行的部署
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      enabled: ${{ steps.check.outputs.enabled }}
+    steps:
+      # 刚用模板生成的仓库还没开启 Pages：跳过而不是报错（开启后的第一次发布会正常构建）
+      - id: check
+        name: Check that Pages is enabled
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${{ github.repository }}/pages" --silent 2>/dev/null; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::GitHub Pages 还没有开启：在辰记「绑定 GitHub」后会自动开启，或在 Settings → Pages → Source 选 GitHub Actions。"
+          fi
+      - if: steps.check.outputs.enabled == 'true'
+        uses: actions/checkout@v4
+      - if: steps.check.outputs.enabled == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - if: steps.check.outputs.enabled == 'true'
+        id: pages
+        uses: actions/configure-pages@v5
+      - if: steps.check.outputs.enabled == 'true'
+        run: npm ci
+      - if: steps.check.outputs.enabled == 'true'
+        run: npm run build
+        env:
+          SITE_URL: ${{ steps.pages.outputs.base_url }}
+      - if: steps.check.outputs.enabled == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.enabled == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 200" width="720" height="200" font-family="-apple-system,BlinkMacSystemFont,'PingFang SC','Segoe UI',sans-serif" font-size="15">
+<rect width="720" height="200" rx="16" fill="#f4f6fb"/>
+<g fill="#fff" stroke="#c9d1e6"><rect x="24" y="64" width="140" height="72" rx="12"/><rect x="200" y="64" width="140" height="72" rx="12"/><rect x="376" y="64" width="140" height="72" rx="12"/><rect x="552" y="64" width="144" height="72" rx="12"/></g>
+<g fill="#1d2433" text-anchor="middle"><text x="94" y="96" font-weight="600">辰记 StarNote</text><text x="94" y="118" fill="#5b6478" font-size="12">写作 · 发布</text>
+<text x="270" y="96" font-weight="600">GitHub 仓库</text><text x="270" y="118" fill="#5b6478" font-size="12">content/posts/…</text>
+<text x="446" y="96" font-weight="600">Actions</text><text x="446" y="118" fill="#5b6478" font-size="12">npm run build</text>
+<text x="624" y="96" font-weight="600">GitHub Pages</text><text x="624" y="118" fill="#5b6478" font-size="12">你的博客</text></g>
+<g stroke="#3b5bdb" stroke-width="2.4" fill="none" stroke-linecap="round"><path d="M168 100h26M188 94l6 6-6 6"/><path d="M344 100h26M364 94l6 6-6 6"/><path d="M520 100h26M540 94l6 6-6 6"/></g>
+</svg>

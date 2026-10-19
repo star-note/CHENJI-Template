@@ -1,0 +1,23 @@
+{# 辰记's own section on 关于我们 / 联系我们 (SPEC-r3 §G), the peer of the blog's: what 辰记 is, the invitation and
+   how to reach us — same structure as starnote-web PublicBlogAbout.tsx. Expects `cj_kind` = 'about' | 'contact'.
+   GitHub 模板：去掉辰记客服邮箱 / 条款，改为指向作者的辰记博客。 #}
+<section class="page-article about-cj" aria-labelledby="cj-title">
+  <header class="page-head">
+    <div>
+      <h2 id="cj-title">{{ t('about_starnote') if cj_kind == 'about' else t('contact_starnote') }}</h2>
+      <div class="page-sub">{{ t('cj_sub') }}</div>
+    </div>
+  </header>
+  {# the full logo, large enough to see the night-and-sea animation (generated from src/brand/Logo.tsx) #}
+  <a href="{{ site.url_platform() }}" class="about-cj-logo" aria-label="{{ t('brand') }}">{% set uid = 'sn-lockup' %}{% include "brand/_lockup_" ~ ('en' if site.lang == 'en' else 'zh-CN') ~ ".html" %}</a>
+  <p>{{ t('cj_pitch') }}</p>
+  <p class="about-cj-act">
+    <a href="{{ site.url_register() }}" class="about-cj-btn">{{ t('foot_cta_btn') }}</a>
+    <a href="{{ site.url_platform() }}">{{ t('cj_learn') }}</a>
+  </p>
+  {% if site.url_starnote_blog() %}
+  <p class="about-cj-meta">
+    <a href="{{ site.url_starnote_blog() }}" target="_blank" rel="me noopener">{{ t('nav_starnote_blog') }} · {{ site.url_starnote_blog()|host }}</a>
+  </p>
+  {% endif %}
+</section>

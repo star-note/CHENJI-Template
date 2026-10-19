@@ -1,0 +1,135 @@
+{# 移植自 starnote-api app/web/templates/_macros.html。Imported `with context` so `site` / `t` are available.
+   差异：无阅读数 / 关注数（Pages 没有服务端统计）；侧栏统计换成 文章 / 栏目 / 标签。 #}
+
+{% macro avatar(name, src, size=24) -%}
+{% if src %}<img class="avatar" src="{{ src }}" alt="" width="{{ size }}" height="{{ size }}" style="--sz: {{ size }}px" loading="lazy">{% else %}<span class="avatar avatar-text" style="--sz: {{ size }}px" aria-hidden="true">{{ name|initial('?') }}</span>{% endif %}
+{%- endmacro %}
+
+{% macro owner_avatar(size=24) -%}
+{{ avatar(owner.name, owner.avatar_url, size) }}
+{%- endmacro %}
+
+{% macro cover(src, seed, title, cls='', eager=false) -%}
+{% if src %}<img class="cover {{ cls }}" src="{{ src }}" alt="{{ t('cover_alt', {title: title}) if title else '' }}" {% if eager %}fetchpriority="high"{% else %}loading="lazy"{% endif %} decoding="async">{% else %}<div class="cover cover-plate {{ cls }}" style="background: {{ seed|cover_gradient }}" aria-hidden="true"><span class="cover-plate-mark">{{ title|initial }}</span></div>{% endif %}
+{%- endmacro %}
+
+{% macro post_row(p, show_category=true) -%}
+<article class="post-row hover-img">
+  <div class="post-row-text hover-shift hover-shift-left">
+    {% if show_category and p.category %}
+    <a href="{{ site.url_category(p.category.slug) }}" class="post-row-cat badge">{{ p.category.name }}</a>
+    {% endif %}
+    <h3><a href="{{ site.url_post(p.slug) }}">{{ p.title }}</a></h3>
+    {% if p.summary %}<p>{{ p.summary }}</p>{% endif %}
+    <div class="post-meta-line">
+      <span><time datetime="{{ p.published_at }}">{{ p.published_at|date }}</time></span>
+      <span>{{ t('minutes', {n: p.minutes}) }}</span>
+      {% if p.translations.length %}<span>{% for tr in p.translations %}<a href="{{ tr.href }}" hreflang="{{ tr.hreflang }}" lang="{{ tr.hreflang }}">{{ tr.label }}</a>{% endfor %}</span>{% endif %}
+    </div>
+  </div>
+  <a href="{{ site.url_post(p.slug) }}" class="hover-img-frame post-row-cover" tabindex="-1" aria-hidden="true">{{ cover(p.cover_url, p.category.name if p.category else null, p.title) }}</a>
+</article>
+{%- endmacro %}
+
+{% macro follow_card(card) -%}
+{% if card and card.enabled and (card.qr_url or card.name) %}
+<section class="rail-follow">
+  {% if card.qr_url %}<img src="{{ card.qr_url }}" alt="{{ t('follow_card_alt', {name: card.name or t('follow_card_name')}) }}" width="96" height="96" loading="lazy">{% endif %}
+  <div>
+    <div class="rail-follow-name">{{ card.name or t('follow_card_name') }}</div>
+    <p>{{ card.text or t('follow_card_text') }}</p>
+  </div>
+</section>
+{% endif %}
+{%- endmacro %}
+
+{% macro tip_block(card, inline=false) -%}
+{% if card and card.enabled and (card.wechat_qr_url or card.alipay_qr_url or card.links.length) %}
+<section class="rail-tip{% if inline %} is-inline{% endif %}">
+  <div class="rail-tip-head">
+    <b>{{ card.button_text or t('tip_button') }}</b>
+    {% if inline %}<span>{{ card.text or t('tip_hint') }}</span>{% endif %}
+  </div>
+  <div class="rail-tip-codes">
+    {% if card.wechat_qr_url %}
+    <figure><img src="{{ card.wechat_qr_url }}" alt="{{ t('tip_wechat_alt') }}" loading="lazy"><figcaption>{{ t('tip_wechat') }}</figcaption></figure>
+    {% endif %}
+    {% if card.alipay_qr_url %}
+    <figure><img src="{{ card.alipay_qr_url }}" alt="{{ t('tip_alipay_alt') }}" loading="lazy"><figcaption>{{ t('tip_alipay') }}</figcaption></figure>
+    {% endif %}
+    {% if card.links.length %}
+    <div class="rail-tip-links">
+      {% for l in card.links %}<a href="{{ l.url }}" target="_blank" rel="noreferrer">{{ l.label }}</a>{% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+{%- endmacro %}
+
+{% macro author_block() -%}
+<section class="rail-author">
+  <div class="rail-author-head">
+    {{ owner_avatar(56) }}
+    <div>
+      <a href="{{ site.url_about() }}" class="rail-author-name" rel="author">{{ owner.name }}</a>
+      {% if site.handle %}<div class="rail-author-handle">@{{ site.handle }}</div>{% endif %}
+    </div>
+  </div>
+  {% if blog.bio %}<p>{{ blog.bio }}</p>{% endif %}
+  <div class="rail-author-stats">
+    <span><b>{{ stats.posts|num }}</b><small>{{ t('stat_posts') }}</small></span>
+    <span><b>{{ stats.categories|num }}</b><small>{{ t('stat_categories') }}</small></span>
+    <span><b>{{ stats.tags|num }}</b><small>{{ t('stat_tags') }}</small></span>
+  </div>
+  {% if site.url_starnote_blog() %}<a class="btn btn-primary btn-block blog-follow" href="{{ site.url_starnote_blog() }}" target="_blank" rel="me noopener">{{ t('follow_on_starnote') }}</a>{% endif %}
+  {% if blog.links.length %}
+  <div class="rail-author-links">
+    {% for l in blog.links %}<a href="{{ l.url }}" target="_blank" rel="me noopener"><svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> {{ l.label }}</a>{% endfor %}
+  </div>
+  {% endif %}
+</section>
+{%- endmacro %}
+
+{% macro rail() -%}
+<aside class="blog-rail">
+  {{ author_block() }}
+  {{ follow_card(blog.follow_card) }}
+  {{ tip_block(blog.tip_card) }}
+  {% if hot.length %}
+  <section class="rail-block">
+    <h4>{{ t('hot') }}</h4>
+    <ol class="rail-hot">
+      {% for p in hot %}
+      <li><i>{{ loop.index }}</i><a href="{{ site.url_post(p.slug) }}">{{ p.title }}</a></li>
+      {% endfor %}
+    </ol>
+  </section>
+  {% endif %}
+  {% if tags.length %}
+  <section class="rail-block">
+    <h4>{{ t('tags') }}</h4>
+    <div class="rail-tags">
+      {% for tg in tags %}<a href="{{ site.url_tag(tg.name) }}" rel="nofollow" target="_blank">#{{ tg.name }}{% if tg.count %}<small>{{ tg.count }}</small>{% endif %}</a>{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+  {% if archives.length %}
+  <section class="rail-block">
+    <h4>{{ t('archive') }}</h4>
+    <ul class="rail-archive">
+      {% for a in archives.slice(0, 12) %}<li><span>{{ a.month|month }}</span><em>{{ a.count }}</em></li>{% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+  {{ ad_slot('rail') }}
+</aside>
+{%- endmacro %}
+
+{# An AdSense unit (SPEC-r8 §ads): nothing unless site.json adsense.client is set and this placement has a unit ID.
+   The box reserves its height (no layout shift); blog.js loads the script after consent and pushes each <ins>. #}
+{% macro ad_slot(name) -%}
+{% if ads and ads.slots[name] %}
+<aside class="ad-slot ad-slot-{{ name }}" aria-label="{{ t('ad') }}"><span class="ad-slot-label">{{ t('ad') }}</span><div class="ad-slot-box"><ins class="adsbygoogle" style="display:block" data-ad-client="{{ ads.client }}" data-ad-slot="{{ ads.slots[name] }}" data-ad-format="{{ 'fluid' if name == 'article' else 'auto' }}"{% if name == 'article' %} data-ad-layout="in-article"{% else %} data-full-width-responsive="true"{% endif %}></ins></div></aside>
+{% endif %}
+{%- endmacro %}

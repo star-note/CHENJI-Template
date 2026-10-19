@@ -1,0 +1,20 @@
+{
+  "name": "starnote-blog-template",
+  "version": "1.0.0",
+  "private": true,
+  "description": "辰记 StarNote · GitHub Pages 博客模板（静态生成，与辰记 SSR 博客同一套模板与 SEO/GEO 规则）",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/build.js",
+    "dev": "node scripts/dev.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "nunjucks": "3.2.4",
+    "qrcode-generator": "1.4.4"
+  },
+  "license": "MIT"
+}

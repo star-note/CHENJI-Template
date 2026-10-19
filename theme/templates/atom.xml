@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xml:lang="{{ content_lang }}">
+  <title>{{ shell.title }}</title>
+  <subtitle>{{ shell.description }}</subtitle>
+  <id>{{ site.canonical(site.url_home()) }}</id>
+  <link rel="alternate" type="text/html" href="{{ site.canonical(site.url_home()) }}"/>
+  <link rel="self" type="application/atom+xml" href="{{ site.absolute(site.url_atom()) }}"/>
+  <updated>{{ updated }}</updated>
+  <author>
+    <name>{{ owner.name }}</name>
+    <uri>{{ site.canonical(site.url_home()) }}</uri>
+  </author>
+  <generator uri="{{ site.url_platform() }}">StarNote</generator>
+  <icon>{{ logo }}</icon>
+  {% if avatar %}<logo>{{ avatar }}</logo>{% endif %}
+  {% for p in posts %}
+  <entry>
+    <title>{{ p.title }}</title>
+    <id>{{ p.url }}</id>
+    <link rel="alternate" type="text/html" href="{{ p.url }}"/>
+    <published>{{ p.published_at }}</published>
+    <updated>{{ p.updated_at or p.published_at }}</updated>
+    <author><name>{{ owner.name }}</name><uri>{{ site.canonical(site.url_home()) }}</uri></author>
+    {% if p.category %}<category term="{{ p.category.name }}"/>{% endif %}
+    {% for tg in p.tags %}<category term="{{ tg.name }}"/>{% endfor %}
+    <summary>{{ p.summary or (p.html|truncate_plain(200)) }}</summary>
+    {% if p.cover_abs %}<media:thumbnail url="{{ p.cover_abs }}"/>{% endif %}
+    <content type="html">{% if p.cover_abs %}{{ '<p><img src="' ~ p.cover_abs ~ '" alt=""></p>' }}{% endif %}{{ p.html }}</content>
+  </entry>
+  {% endfor %}
+</feed>

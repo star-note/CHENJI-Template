@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{#- 移植自 starnote-api app/web/templates/contact.html（只有作者一栏；site.json contact 为空时不生成此页）。 -#}
+{% import "_macros.html" as m with context %}
+{% block content %}
+<div class="blog-wrap blog-page">
+  <h1 class="sr-only">{{ t('nav_contact') }}</h1>
+  <div class="page-split">
+    <section class="page-article" aria-label="{{ t('contact_author') }}">
+      {% set head_title = t('contact_author') %}{% include "_owner_head.html" %}
+      <p class="page-lead">{{ t('contact_sub') }}</p>
+      <dl class="contact-list">
+        {% for c in blog.contact %}
+        <div>
+          <dt>{{ c.label }}</dt>
+          <dd>{% if c.url %}<a href="{{ c.url }}"{% if not c.url.startsWith('mailto:') %} target="_blank"{% endif %} rel="noreferrer">{{ c.value }}</a>{% else %}{{ c.value }}{% endif %}</dd>
+        </div>
+        {% endfor %}
+      </dl>
+      {{ m.follow_card(blog.follow_card) }}
+      {{ m.tip_block(blog.tip_card, true) }}
+    </section>
+    {% set cj_kind = 'contact' %}{% include "_chenji.html" %}
+  </div>
+</div>
+{% endblock %}
