@@ -1,0 +1,277 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "辰记 StarNote GitHub Pages 模板 · content/site.json",
+  "description": "博客配置。凡是标 Localized 的字段都可以是字符串，或 {\"zh\": …, \"en\": …}。约定见 SPEC-r8-github-template.md §3。",
+  "type": "object",
+  "$defs": {
+    "localized": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "zh": {
+              "type": "string"
+            },
+            "en": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "link": {
+      "type": "object",
+      "required": [
+        "url"
+      ],
+      "properties": {
+        "label": {
+          "$ref": "#/$defs/localized"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    }
+  },
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "title": {
+      "$ref": "#/$defs/localized",
+      "description": "博客名"
+    },
+    "description": {
+      "$ref": "#/$defs/localized",
+      "description": "一句话简介（meta description、页脚、侧栏）"
+    },
+    "about": {
+      "$ref": "#/$defs/localized",
+      "description": "关于页正文，空行分段"
+    },
+    "author": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "avatar": {
+          "type": "string",
+          "description": "相对 content/ 的路径（assets/avatar.png）或绝对 URL"
+        }
+      }
+    },
+    "url": {
+      "type": "string",
+      "description": "站点网址（含项目站路径，如 https://me.github.io/blog）。留空时 Actions 自动用 configure-pages 的 base_url"
+    },
+    "cname": {
+      "type": "string",
+      "description": "自定义域名（blog.example.com）：构建时写入 CNAME"
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "zh",
+          "en"
+        ]
+      },
+      "minItems": 1,
+      "description": "第一项是默认语言（根路径），其余在 /<lang>/"
+    },
+    "default_language": {
+      "enum": [
+        "zh",
+        "en"
+      ]
+    },
+    "theme": {
+      "enum": [
+        "auto",
+        "light",
+        "dark"
+      ]
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/link"
+      },
+      "description": "社交链接：页脚、关于页、Person.sameAs"
+    },
+    "contact": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "$ref": "#/$defs/localized"
+          },
+          "value": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "为空时不生成联系页"
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "slug"
+        ],
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "name": {
+            "$ref": "#/$defs/localized"
+          }
+        }
+      },
+      "description": "栏目顺序与多语言名称（可选）"
+    },
+    "starnote": {
+      "type": "object",
+      "properties": {
+        "handle": {
+          "type": "string"
+        },
+        "blog_url": {
+          "type": "string",
+          "description": "header「辰记博客」链接，也进 Person.sameAs"
+        },
+        "app_url": {
+          "type": "string"
+        },
+        "api_url": {
+          "type": "string",
+          "description": "默认 <辰记原文的源>/api/v1"
+        }
+      }
+    },
+    "comments": {
+      "enum": [
+        "chenji",
+        "giscus",
+        "off"
+      ],
+      "default": "chenji"
+    },
+    "giscus": {
+      "type": "object",
+      "properties": {
+        "repo": {
+          "type": "string"
+        },
+        "repo_id": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "category_id": {
+          "type": "string"
+        },
+        "mapping": {
+          "type": "string"
+        }
+      }
+    },
+    "adsense": {
+      "type": "object",
+      "properties": {
+        "client": {
+          "type": "string",
+          "pattern": "^((ca-)?pub-\\d{10,20})?$"
+        },
+        "slots": {
+          "type": "object",
+          "properties": {
+            "article": {
+              "type": "string"
+            },
+            "end": {
+              "type": "string"
+            },
+            "rail": {
+              "type": "string"
+            }
+          }
+        },
+        "consent": {
+          "enum": [
+            "cmp",
+            "banner"
+          ],
+          "default": "cmp"
+        },
+        "ads_txt_lines": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "robots": {
+      "type": "object",
+      "properties": {
+        "ai_search": {
+          "type": "boolean"
+        },
+        "ai_training": {
+          "type": "boolean"
+        },
+        "disallow_md": {
+          "type": "boolean"
+        }
+      }
+    },
+    "share": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "type": "string"
+        },
+        "image_width": {
+          "type": "integer"
+        },
+        "image_height": {
+          "type": "integer"
+        },
+        "utm": {
+          "type": "boolean"
+        }
+      }
+    },
+    "twitter": {
+      "type": "string",
+      "description": "twitter:site，如 @yourname"
+    },
+    "posts_per_page": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "privacy_updated": {
+      "type": "string"
+    },
+    "follow_card": {
+      "type": "object"
+    },
+    "tip_card": {
+      "type": "object"
+    }
+  }
+}

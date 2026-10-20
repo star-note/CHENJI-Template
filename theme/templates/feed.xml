@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:media="http://search.yahoo.com/mrss/">
+<channel>
+  <title>{{ shell.title }}</title>
+  <link>{{ site.canonical(site.url_home()) }}</link>
+  <atom:link href="{{ site.absolute(site.url_feed()) }}" rel="self" type="application/rss+xml"/>
+  <description>{{ shell.description }}</description>
+  <language>{{ content_lang|lower }}</language>
+  <generator>StarNote GitHub Pages template</generator>
+  <lastBuildDate>{{ now|rfc822 }}</lastBuildDate>
+  <image>
+    <url>{{ avatar or logo }}</url>
+    <title>{{ shell.title }}</title>
+    <link>{{ site.canonical(site.url_home()) }}</link>
+  </image>
+  {% for p in posts %}
+  <item>
+    <title>{{ p.title }}</title>
+    <link>{{ p.url }}</link>
+    <guid isPermaLink="true">{{ p.url }}</guid>
+    <pubDate>{{ p.published_at|rfc822 }}</pubDate>
+    <dc:creator>{{ owner.name }}</dc:creator>
+    {% if p.category %}<category>{{ p.category.name }}</category>{% endif %}
+    {% for tg in p.tags %}<category>{{ tg.name }}</category>{% endfor %}
+    <description>{{ p.summary or (p.html|truncate_plain(200)) }}</description>
+    {% if p.cover_abs %}
+    <media:content url="{{ p.cover_abs }}" medium="image"/>
+    <media:thumbnail url="{{ p.cover_abs }}"/>
+    {% endif %}
+    <content:encoded><![CDATA[{% if p.cover_abs %}<p><img src="{{ p.cover_abs }}" alt="{{ p.cover_alt or '' }}"></p>{% endif %}{{ p.html|cdata }}<p><a href="{{ p.url }}">{{ p.title }}</a> · {{ shell.title }}</p>]]></content:encoded>
+  </item>
+  {% endfor %}
+</channel>
+</rss>

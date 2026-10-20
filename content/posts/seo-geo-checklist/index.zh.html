@@ -1,0 +1,19 @@
+---
+title: 独立博客的 SEO 与 GEO 检查清单（2026 版）
+summary: 搜索引擎和 AI 搜索看的东西越来越像：清晰的结构、可引用的段落、可信的作者信息。这份清单按「页面、站点、AI 引用」三层列出独立博客上线前该检查的 15 项。
+date: 2026-10-05T08:30:00+08:00
+updated: 2026-10-06T09:00:00+08:00
+category: tech
+tags: [SEO, GEO, 独立博客]
+---
+<!--sn:article 1-->
+<p>独立博客最大的优势是<strong>你能控制每一个标签</strong>。这份清单是我给每个新博客上线前过一遍的检查项，这个模板已经帮你做好了大部分。</p>
+<h2 data-variant="bar" class="sn-h sn-h--bar" id="h-0-页面层">页面层</h2>
+<ul><li><p>每页一个 H1，标题 50–60 字符，描述 150–160 字符</p></li><li><p>canonical 指向自己（转载时指向原文）</p></li><li><p>图片有 alt、宽高，首屏大图不懒加载</p></li><li><p>文章开头 40–60 字就给出答案</p></li></ul>
+<h2 data-variant="bar" class="sn-h sn-h--bar" id="h-1-站点层">站点层</h2>
+<table><tbody><tr><th><p>项目</p></th><th><p>这个模板</p></th></tr><tr><td><p>sitemap + hreflang</p></td><td><p>每种语言一份，译文互指，含 x-default</p></td></tr><tr><td><p>结构化数据</p></td><td><p>BlogPosting、BreadcrumbList、WebSite、Person</p></td></tr><tr><td><p>RSS / Atom</p></td><td><p>全文输出</p></td></tr><tr><td><p>robots.txt</p></td><td><p>AI 搜索与 AI 训练爬虫分组可配</p></td></tr></tbody></table>
+<h2 data-variant="bar" class="sn-h sn-h--bar" id="h-2-ai-引用层">AI 引用层</h2>
+<p>AI 搜索更愿意引用能独立成立的段落、有明确作者和更新时间的页面。模板会为每篇文章输出一份 Markdown 版本，并在 <code>llms.txt</code> 里列出全部文章。</p>
+<div data-type="card" data-variant="warn" data-label="注意" class="sn-box sn-box--warn"><p>llms.txt 是可选项，不是排名杠杆。真正有用的是内容本身：答案先行、数据有出处、作者可信。</p></div>
+<h3 id="h-3-屏蔽训练爬虫会影响搜索吗">屏蔽训练爬虫会影响搜索吗</h3>
+<p>不会。GPTBot、ClaudeBot 这类训练爬虫和 OAI-SearchBot、PerplexityBot 这类搜索爬虫是分开的，在 <code>site.json</code> 的 <code>robots</code> 里可以分别开关。</p>

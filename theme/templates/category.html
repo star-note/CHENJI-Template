@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{#- 移植自 starnote-api app/web/templates/category.html；分页为 /c/<slug>/page/<n>/。 -#}
+{% import "_macros.html" as m with context %}
+{% block head %}
+{% if prev_url %}<link rel="prev" href="{{ site.canonical(prev_url) }}">{% endif %}
+{% if next_url %}<link rel="next" href="{{ site.canonical(next_url) }}">{% endif %}
+{% endblock %}
+{% block content %}
+<div class="blog-wrap">
+  <div class="blog-grid">
+    <div class="blog-main">
+      <header class="cat-head">
+        <h2>{{ category.name }}</h2>
+        <span>{{ t('posts_n', {n: category.count|num}) }}</span>
+      </header>
+      {% if not items.length %}
+      <div class="empty">{{ t('empty_category', {name: category.name}) }}</div>
+      {% else %}
+      {% for p in items %}{{ m.post_row(p, false) }}{% endfor %}
+      {% if pages > 1 %}
+      <nav class="blog-pager" aria-label="{{ t('pager_page', {n: page}) }}">
+        {% if prev_url %}<a class="btn btn-sm" href="{{ prev_url }}" rel="prev">{{ t('pager_prev') }}</a>{% endif %}
+        <span class="blog-pager-info">{{ t('pager_page', {n: page}) }} / {{ pages }}</span>
+        {% if next_url %}<a class="btn btn-sm" href="{{ next_url }}" rel="next">{{ t('pager_next') }}</a>{% endif %}
+      </nav>
+      {% endif %}
+      {% endif %}
+    </div>
+    {{ m.rail() }}
+  </div>
+</div>
+{% endblock %}

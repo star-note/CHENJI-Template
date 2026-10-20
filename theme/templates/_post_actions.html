@@ -1,0 +1,54 @@
+{#- Post actions: a sticky rail left of the article (≥1280px) that becomes a bottom bar on smaller screens.
+    Everything works without JS: 评论 is an anchor, 关注 goes to the platform login, 分享 is a <details> holding the
+    server-rendered QR code, the share intents and the share-card preview. blog.js adds: show after the header,
+    hide-on-scroll-down for the bar, copy link + toast, the Web Share button, Escape / outside tap closing,
+    and (only when configured) the 微信 JS-SDK share card. Mirrors src/components/blog/PostActions.tsx.
+    （GitHub 模板：「关注」跳到作者的辰记博客；评论入口只在接了辰记评论时出现。） -#}
+{% import "_icons.html" as ic %}
+<aside class="pa" aria-label="{{ t('pa_label') }}" data-pa>
+  {% if comments_on %}
+  <a class="pa-btn" href="#comments" aria-label="{{ t('pa_comments') }}" data-tip="{{ t('pa_comments') }}">
+    {{ ic.icon('comment') }}<span class="pa-label">{{ t('pa_comments') }}</span><span class="pa-count" data-pa-comments{% if not post.comments %} hidden{% endif %}>{{ post.comments|num }}</span>
+  </a>
+  {% endif %}
+  {% if site.url_starnote_blog() %}
+  <a class="pa-btn" href="{{ site.url_starnote_blog() }}" target="_blank" rel="me noopener" aria-label="{{ t('follow_on_starnote') }}" data-tip="{{ t('follow_on_starnote') }}">
+    {{ ic.icon('star') }}<span class="pa-label">{{ t('follow') }}</span>
+  </a>
+  {% endif %}
+  <details class="pa-share" data-share>
+    <summary class="pa-btn" aria-label="{{ t('pa_share') }}" data-tip="{{ t('pa_share') }}">
+      {{ ic.icon('share') }}<span class="pa-label">{{ t('pa_share') }}</span>
+    </summary>
+    <div class="share-pop" role="dialog" aria-label="{{ t('share_title') }}">
+      <div class="share-head">
+        <b>{{ t('share_title') }}</b>
+        <button type="button" class="share-close" aria-label="{{ t('share_close') }}" data-share-close hidden><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
+      <div class="share-qr-row">
+        <div class="share-qr" role="img" aria-label="{{ t('share_wechat') }}">{{ share.qr | safe }}</div>
+        <div class="share-qr-text">
+          <b>{{ ic.icon('wechat', 16) }}{{ t('share_wechat') }}</b>
+          <span>{{ t('share_wechat_text') }}</span>
+        </div>
+      </div>
+      <div class="share-links">
+        <button type="button" class="share-link" data-share-copy="{{ share.url }}" hidden><span class="share-ico">{{ ic.icon('link') }}</span><span>{{ t('share_copy') }}</span></button>
+        {% for it in share.intents %}
+        <a class="share-link" href="{{ it.href }}" target="_blank" rel="noopener noreferrer nofollow"><span class="share-ico">{{ ic.icon(it.key) }}</span><span>{{ t('share_' ~ it.key) }}</span></a>
+        {% endfor %}
+        <button type="button" class="share-link" data-share-native="{{ share.native_url }}" hidden><span class="share-ico">{{ ic.icon('more') }}</span><span>{{ t('share_native') }}</span></button>
+      </div>
+      <label class="share-url" data-share-url><span>{{ t('share_url_label') }}</span><input type="text" readonly value="{{ share.url }}" onfocus="this.select()"></label>
+      <figure class="share-card">
+        {% if share.image %}<div class="share-card-img"><img src="{{ share.image }}" alt="{{ share.image_alt }}" loading="lazy" decoding="async"></div>{% endif %}
+        <figcaption>
+          <b>{{ share.title }}</b>
+          {% if share.summary %}<span>{{ share.summary }}</span>{% endif %}
+          <small>{{ share.host }}</small>
+        </figcaption>
+      </figure>
+      <p class="share-card-hint">{{ t('share_card_hint') }}</p>
+    </div>
+  </details>
+</aside>

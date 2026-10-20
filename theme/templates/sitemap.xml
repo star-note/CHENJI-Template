@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+{% for e in entries %}
+  <url>
+    <loc>{{ e.loc }}</loc>
+    {% if e.lastmod %}
+    <lastmod>{{ e.lastmod }}</lastmod>
+    {% endif %}
+    <changefreq>{{ e.changefreq }}</changefreq>
+    <priority>{{ e.priority }}</priority>
+{# the same set as the page's <link rel=alternate hreflang>: every language version + x-default #}
+    {% for alt in e.alternates %}
+    <xhtml:link rel="alternate" hreflang="{{ alt.lang }}" href="{{ alt.href }}"/>
+    {% endfor %}
+    {% for img in e.images %}
+    <image:image>
+      <image:loc>{{ img.loc }}</image:loc>
+    </image:image>
+    {% endfor %}
+  </url>
+{% endfor %}
+</urlset>

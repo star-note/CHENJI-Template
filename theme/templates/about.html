@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{#- 移植自 starnote-api app/web/templates/about.html：作者与辰记两栏并列。 -#}
+{% import "_macros.html" as m with context %}
+{% block content %}
+<div class="blog-wrap blog-page">
+  <h1 class="sr-only">{{ t('nav_about') }}</h1>
+  <div class="page-split">
+    <section class="page-article" aria-label="{{ t('about_author') }}">
+      {% set head_title = about_title %}{% include "_owner_head.html" %}
+      {% if about_paras.length %}
+      {% for p in about_paras %}<p>{{ p }}</p>{% endfor %}
+      {% else %}
+      <p class="muted">{{ t('about_empty') }}</p>
+      {% endif %}
+      {% if profile_links.length %}
+      <ul class="page-links">
+        {% for l in profile_links %}
+        <li><a href="{{ l.url }}" target="_blank" rel="me noopener">{{ l.label }}</a><span>{{ l.url|host }}</span></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      {{ m.follow_card(blog.follow_card) }}
+    </section>
+    {% set cj_kind = 'about' %}{% include "_chenji.html" %}
+  </div>
+</div>
+{% endblock %}

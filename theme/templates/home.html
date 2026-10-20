@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{#- 移植自 starnote-api app/web/templates/home.html（去掉阅读数）。 -#}
+{% import "_macros.html" as m with context %}
+{% block content %}
+<div class="blog-wrap">
+  {% if not lead %}
+  <div class="empty">{{ t('empty_blog') }}</div>
+  {% else %}
+  <h1 class="sr-only">{{ shell.title }}</h1>
+  <section class="hero">
+    <a href="{{ site.url_post(lead.slug) }}" class="hero-lead hover-img">
+      <div class="hero-lead-media">
+        {{ m.cover(lead.cover_url, lead.category.name if lead.category else null, lead.title, '', true) }}
+        <div class="hero-chips">
+          {% if lead.pinned %}<span class="chip chip-pin">{{ t('pinned') }}</span>{% endif %}
+          {% if lead.category %}<span class="chip">{{ lead.category.name }}</span>{% endif %}
+        </div>
+      </div>
+      <div class="hero-lead-text">
+        <h2>{{ lead.title }}</h2>
+        {% if lead.summary %}<p>{{ lead.summary }}</p>{% endif %}
+        <div class="hero-meta">
+          <span><time datetime="{{ lead.published_at }}">{{ lead.published_at|date }}</time></span>
+          <span>{{ t('minutes', {n: lead.minutes}) }}</span>
+        </div>
+      </div>
+    </a>
+    {% if side.length %}
+    <div class="hero-side">
+      {% for p in side %}
+      <a href="{{ site.url_post(p.slug) }}" class="hero-side-item hover-img">
+        <span class="hover-img-frame hero-side-cover">{{ m.cover(p.cover_url, p.category.name if p.category else null, p.title) }}</span>
+        <div class="hover-shift hover-shift-right">
+          {% if p.category %}<div class="eyebrow">{{ p.category.name }}</div>{% endif %}
+          <h3>{{ p.title }}</h3>
+          <div class="post-meta-line">
+            <span><time datetime="{{ p.published_at }}">{{ p.published_at|date('short') }}</time></span>
+            <span>{{ t('minutes', {n: p.minutes}) }}</span>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </section>
+
+  <div class="blog-grid">
+    <div class="blog-main">
+      {% if latest.length %}
+      <section class="home-section">
+        <header class="home-section-head"><h2>{{ t('latest') }}</h2></header>
+        {% for p in latest %}{{ m.post_row(p) }}{% endfor %}
+      </section>
+      {% endif %}
+    </div>
+    {{ m.rail() }}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

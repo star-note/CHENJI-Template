@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{#- 隐私政策（结构同 starnote-api legal.html）：content/pages/privacy.<lang>.html 存在时用作者自己的正文，
+    否则用模板内置的说明（theme/i18n.github.json 的 privacy_*）。 -#}
+{% block content %}
+<div class="blog-wrap blog-wrap-narrow">
+  <article class="page-article legal">
+    <header class="page-head">
+      <div>
+        <h1>{{ legal_title }}</h1>
+        {% if legal_updated %}<div class="page-sub">{{ t('legal_updated', {date: legal_updated}) }}</div>{% endif %}
+      </div>
+    </header>
+    {% if legal_html %}
+    {{ legal_html|safe }}
+    {% else %}
+    {% for p in legal_paras %}<p>{{ p|links }}</p>{% endfor %}
+    {% endif %}
+  </article>
+</div>
+{% endblock %}

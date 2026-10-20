@@ -1,0 +1,27 @@
+---
+title: Publishing your blog to your own GitHub Pages with StarNote
+summary: Hit Publish in StarNote and the post is committed to your repository as one HTML file; about a minute later GitHub Actions turns it into a static site with SEO, RSS and llms.txt, with its own URL for every language.
+date: 2026-10-18T09:00:00+08:00
+updated: 2026-10-19T10:30:00+08:00
+category: { slug: tech, name: Tech }
+tags: [GitHub Pages, StarNote, Indie blogging]
+cover: cover.png
+cover_alt: How a post travels from StarNote to GitHub Pages
+pinned: true
+---
+<!--sn:article 1-->
+<p>In one sentence: <strong>you write in StarNote, the website lives in your own GitHub repository</strong>. StarNote only commits post files (front matter + body HTML); GitHub Actions builds the whole site with this template. The repository is yours and keeps working without StarNote.</p>
+<h2 data-variant="pill" class="sn-h sn-h--pill" id="h-0-three-steps">Three steps</h2>
+<ol><li><p>Click <strong>Use this template</strong>; name the repository <code>&lt;username&gt;.github.io</code>.</p></li><li><p>Create a fine-grained token for that repository only (Contents and Pages: read and write).</p></li><li><p>Paste the repository and the token into StarNote → Connect GitHub. StarNote turns Pages on and publishes your first post.</p></li></ol>
+<div data-type="card" data-variant="tip" data-label="Tip" class="sn-box sn-box--tip"><p>With any other repository name the site lives under <code>/repository-name/</code>; the template handles every link for you.</p></div>
+<h2 data-variant="pill" class="sn-h sn-h--pill" id="h-1-what-happens-on-publish">What happens on publish</h2>
+<figure class="image-view" data-type="imageBlock" style="display: block; text-align: center;"><span class="image-view__body"><img class="image-view__body__image block" src="flow.svg" alt="StarNote → repository → Actions → Pages" style="transform: none"></span><figcaption class="image-view__caption" style="text-align: center;">One publish, end to end</figcaption></figure>
+<p>StarNote writes the post folder in a single commit through the GitHub API:</p>
+<div class="richtext-code-block" data-language="bash"><pre class="shj"><code class="language-bash">content/posts/hello-starnote/
+├── index.zh.html   # Chinese original
+├── index.en.html   # English translation (optional)
+└── cover.png       # cover and body images</code></pre><div aria-hidden="true" class="richtext-code-block__gutter"><span>1</span><span>2</span><span>3</span><span>4</span></div><div class="richtext-code-block__toolbar"><span class="richtext-code-block__lang">Bash</span><button type="button" class="richtext-code-block__copy" data-sn-copy data-copied-label="Copied" aria-label="Copy code" title="Copy code" hidden><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="14" height="14"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="14" height="14"><path d="M20 6 9 17l-5-5"/></svg></button></div></div>
+<p>The push runs <code>.github/workflows/pages.yml</code>: install, <code>npm run build</code>, upload <code>_site/</code>, deploy.</p>
+<h2 data-variant="pill" class="sn-h sn-h--pill" id="h-2-two-languages">Two languages</h2>
+<p>Chinese lives at the root, English under <code>/en/</code>. Both versions of a post sit in one folder and point at each other with hreflang; a post written in one language shows no language switch.</p>
+<blockquote class="blockquote sn-quote sn-quote--line" data-variant="line"><p>Your site, your content: post files are plain front matter + HTML that Jekyll, Hugo or Eleventy can read as is.</p></blockquote>

@@ -1,0 +1,29 @@
+---
+title: 用辰记把博客发到自己的 GitHub Pages
+summary: 在辰记写完点「发布」，文章会作为一个 HTML 文件提交到你的仓库，GitHub Actions 约一分钟后把它变成带 SEO、RSS、llms.txt 的静态网站，中英双语各有自己的网址。
+date: 2026-10-18T09:00:00+08:00
+updated: 2026-10-19T10:30:00+08:00
+category: { slug: tech, name: 技术 }
+tags: [GitHub Pages, 辰记, 独立博客]
+cover: cover.png
+cover_alt: 辰记到 GitHub Pages 的发布流程示意
+pinned: true
+---
+<!--sn:article 1-->
+<p>一句话：<strong>文章在辰记写，网站在你自己的 GitHub 仓库里</strong>。辰记只往仓库提交「front matter + 正文 HTML」的文章文件，GitHub Actions 用这个模板把整站构建出来。仓库归你，离开辰记站点照样能更新。</p>
+<h2 data-variant="pill" class="sn-h sn-h--pill" id="h-0-三步开通">三步开通</h2>
+<ol><li><p>在模板仓库点 <strong>Use this template</strong>，仓库名建议填 <code>&lt;用户名&gt;.github.io</code>。</p></li><li><p>生成一个只授权这个仓库的细粒度令牌（Contents、Pages 读写）。</p></li><li><p>在辰记「绑定 GitHub」里填仓库名和令牌，辰记会开启 Pages 并发布第一篇文章。</p></li></ol>
+<div data-type="card" data-variant="tip" data-label="提示" class="sn-box sn-box--tip"><p>仓库名不是 <code>&lt;用户名&gt;.github.io</code> 时，网站在 <code>/仓库名/</code> 子路径下，模板会自动处理所有链接。</p></div>
+<h2 data-variant="pill" class="sn-h sn-h--pill" id="h-1-发布时发生了什么">发布时发生了什么</h2>
+<figure class="image-view" data-type="imageBlock" style="display: block; text-align: center;"><span class="image-view__body"><img class="image-view__body__image block" src="flow.svg" alt="辰记 → 仓库 → Actions → Pages" style="transform: none"></span><figcaption class="image-view__caption" style="text-align: center;">图：一次发布的完整链路</figcaption></figure>
+<p>辰记通过 GitHub API 一次提交写入文章目录：</p>
+<div class="richtext-code-block" data-language="bash"><pre class="shj"><code class="language-bash">content/posts/hello-starnote/
+├── index.zh.html   # 中文正文
+├── index.en.html   # 英文译文（可选）
+└── cover.png       # 封面与正文图片</code></pre><div aria-hidden="true" class="richtext-code-block__gutter"><span>1</span><span>2</span><span>3</span><span>4</span></div><div class="richtext-code-block__toolbar"><span class="richtext-code-block__lang">Bash</span><button type="button" class="richtext-code-block__copy" data-sn-copy data-copied-label="已复制" aria-label="复制代码" title="复制代码" hidden><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="14" height="14"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="14" height="14"><path d="M20 6 9 17l-5-5"/></svg></button></div></div>
+<p>推送触发 <code>.github/workflows/pages.yml</code>：安装依赖、运行 <code>npm run build</code>、上传 <code>_site/</code> 并部署。</p>
+<h3 id="h-2-生成了哪些文件">生成了哪些文件</h3>
+<table><tbody><tr><th><p>文件</p></th><th><p>用途</p></th></tr><tr><td><p>每篇文章的 HTML</p></td><td><p>canonical、OG、JSON-LD、hreflang 都在构建时写好</p></td></tr><tr><td><p>sitemap.xml</p></td><td><p>索引 + 每种语言一份，带译文互指</p></td></tr><tr><td><p>feed.xml / atom.xml</p></td><td><p>全文订阅，中英文各一份</p></td></tr><tr><td><p>llms.txt / *.md</p></td><td><p>给 AI 搜索引用的纯文本版本</p></td></tr></tbody></table>
+<h2 data-variant="pill" class="sn-h sn-h--pill" id="h-3-双语怎么处理">双语怎么处理</h2>
+<p>中文在根路径，英文在 <code>/en/</code>。同一篇文章的两种语言放在同一个目录里，页面会互相声明 hreflang；只有一种语言的文章不会出现语言切换。</p>
+<blockquote class="blockquote sn-quote sn-quote--line" data-variant="line"><p>站点是你的，内容也是你的：文章文件是标准的 front matter + HTML，Jekyll、Hugo、Eleventy 都能直接读。</p></blockquote>

@@ -1,0 +1,9 @@
+{# The blog's section head on 关于 / 联系: avatar, heading, stats, follow (on 辰记). Expects `head_title`. #}
+<header class="page-head">
+  {{ m.owner_avatar(56) }}
+  <div>
+    <h2>{{ head_title }}</h2>
+    <div class="page-sub">{{ owner.name }} · {{ t('posts_unit', {n: stats.posts|num}) }}</div>
+  </div>
+  {% if site.url_starnote_blog() %}<a class="btn btn-primary blog-follow" href="{{ site.url_starnote_blog() }}" target="_blank" rel="me noopener">{{ t('follow_on_starnote') }}</a>{% endif %}
+</header>
